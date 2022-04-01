@@ -14,7 +14,7 @@ contract ERC42069Factory {
     }
 
     function createERC42069(
-    ERC721 _erc721Asset,
+        ERC721 _erc721Asset,
         string memory _name,
         string memory _symbol,
         uint8 _decimals
