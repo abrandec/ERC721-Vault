@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.12;
 
-import "./ERC42069.sol";
 import {ClonesWithImmutableArgs} from "clones-with-immutable-args/ClonesWithImmutableArgs.sol";
+import "./ERC42069.sol";
 
+/// @title ERC42069 Clone Factory
 contract ERC42069Factory {
     using ClonesWithImmutableArgs for address;
 
@@ -14,12 +15,12 @@ contract ERC42069Factory {
     }
 
     function createERC42069(
-        ERC721 _erc721Asset,
-        string memory _name,
-        string memory _symbol,
-        uint8 _decimals
+        ERC721 erc721Asset_,
+        string memory name_,
+        string memory symbol_,
+        uint8 decimals_
     ) public returns (ERC42069 clone) {
-        bytes memory data = abi.encodePacked(_erc721Asset, _name, _symbol, _decimals);
+        bytes memory data = abi.encodePacked(erc721Asset_, name_, symbol_, decimals_);
         clone = ERC42069(address(erc42069).clone(data));
     }
 }

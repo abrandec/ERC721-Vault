@@ -19,13 +19,12 @@ contract ERC42069Test is DSTestPlus {
     // the batch mintoor
     function mintERC721(uint256[] memory tokenId) public {
         for (uint256 i = 0; i < tokenId.length; ++i) {
-            mockERC721.mint(address(0xBEEF), tokenId[i]);
+        mockERC721.mint(address(0xBEEF), tokenId[i]);
         }
     }
 
 
     /// ============ SANITY TESTS ============
-
     function testDeposit() public {
         uint256[] memory index = new uint256[](1);
         index[0] = 0;
@@ -45,20 +44,20 @@ contract ERC42069Test is DSTestPlus {
     }
 
     function testDepositDiffUser() public {
-     testDeposit();
-     vm.stopPrank();
-      uint256[] memory id = new uint256[](1);
+        testDeposit();
+        vm.stopPrank();
+        uint256[] memory id = new uint256[](1);
         id[0] = 0;
-    vm.expectRevert(bytes("NOT_AUTHORIZED"));
-    mockERC721.approve(address(erc42069), 0);
-    vm.expectRevert(bytes("WRONG_FROM"));
-    erc42069.mint(id, address(0xBEEF));
+        vm.expectRevert(bytes("NOT_AUTHORIZED"));
+        mockERC721.approve(address(erc42069), 0);
+        vm.expectRevert(bytes("WRONG_FROM"));
+        erc42069.mint(id, address(0xBEEF));
     }
 
-       function testTransfer() public {
+    function testTransfer() public {
         testDeposit();
         erc42069.transfer(address(0), 1 wei);
-       }
+    }
 
     /// ============ TESTS INTENDED TO FAIL ============
 
@@ -88,7 +87,7 @@ contract ERC42069Test is DSTestPlus {
     }
 
     function testWithdrawReentrancy() public {
-         testDeposit();
+        testDeposit();
         uint256[] memory id = new uint256[](1);
         id[0] = 0;
         erc42069.withdraw(id, address(0xBEEF));

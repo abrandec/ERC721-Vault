@@ -24,37 +24,40 @@ contract ERC42069 is ERC20 {
 
   /// ============ CONSTRUCTOR ============
 
+  /// @param erc721Asset_ Address of ERC721 asset 
+  /// @param name_ Name for ERC20 token representing an ERC721 asset
+  /// @param symbol_ Symbol for ERC20 token representing an ERC721 asset
+  /// @param decimals_ Amount of decimals for ERC20 token.  Standard is 18.
   constructor(
-    ERC721 _erc721Asset,
-    string memory _name,
-    string memory _symbol,
-    uint8 _decimals
-  ) ERC20 (_name, _symbol, _decimals) {
-    erc721Asset = _erc721Asset; 
+    ERC721 erc721Asset_,
+    string memory name_,
+    string memory symbol_,
+    uint8 decimals_
+  ) ERC20 (name_, symbol_, decimals_) {
+    erc721Asset = erc721Asset_; 
   }
-
 
   /// ============ DEPOSIT/WITHDRAW FUNCTIONS ============
 
   /// @param tokenId tokenId(s) to send to vault.
-  /// @param receiver_ receiver of minted ERC20 tokens
+  /// @param receiver_ Receiver of minted ERC20 tokens.
+  /// @return amount Amount of ERC20 tokens received.
   function mint(uint256[] calldata tokenId, address receiver_) public returns (uint256) {
-   
-      for (uint256 i; i < tokenId.length;) {
-        erc721Asset.transferFrom(address(msg.sender), address(this), tokenId[i]);
+    for (uint256 i; i < tokenId.length;) {
+      erc721Asset.transferFrom(address(msg.sender), address(this), tokenId[i]);
         
-        // The _mint() function better be the last thing in the loop
-        _mint(address(receiver_), 1e18);
+      // The _mint() function better be the last thing in the loop
+      _mint(address(receiver_), 1e18);
 
-        // Impossible to overflow
-        unchecked {++i;}
-      }
+      // Impossible to overflow
+      unchecked {++i;}
+    }
 
-      uint256 amount;
+    uint256 amount;
 
-      emit Deposit(address(msg.sender), receiver_, tokenId);
+    emit Deposit(address(msg.sender), receiver_, tokenId);
 
-      return amount = 1e18 * tokenId.length;
+    return amount = 1e18 * tokenId.length;
   }
 
   /// @param tokenId The tokenId(s) that a msg.sender wants to withdraw.
@@ -63,19 +66,18 @@ contract ERC42069 is ERC20 {
   // Removing requirement statement for approval cuts gas cost by a lot for users,
   // still reverts on _burn() if msg.sender doesn't have enough erc20 tokens to transfer
   function withdraw(uint256[] calldata tokenId, address receiver_) public returns (uint256[] calldata) {
-    
     for (uint256 i; i < tokenId.length;) {
-        _burn(address(msg.sender), 1e18);
-        erc721Asset.transferFrom(address(this), address(receiver_), tokenId[i]);
+      _burn(address(msg.sender), 1e18);
+      erc721Asset.transferFrom(address(this), address(receiver_), tokenId[i]);
       
-        // impossible to overflow
-        unchecked {++i;}
-  }
+      // impossible to overflow
+      unchecked {++i;}
+    }
 
-      uint256 amount;
+    uint256 amount;
 
-      emit Withdraw(msg.sender, receiver_, tokenId);
+    emit Withdraw(msg.sender, receiver_, tokenId);
       
-      return tokenId;
+    return tokenId;
   }
 }
