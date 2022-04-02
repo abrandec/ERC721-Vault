@@ -7,7 +7,7 @@ import "./ERC42069.sol";
 /// @title ERC42069 Clone Factory
 contract ERC42069Factory {
     using ClonesWithImmutableArgs for address;
-
+    
     ERC42069 public erc42069;
 
     constructor(ERC42069 erc42069_) {

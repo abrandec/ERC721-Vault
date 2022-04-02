@@ -42,20 +42,17 @@ contract ERC42069 is ERC20 {
   /// @param tokenId tokenId(s) to send to vault.
   /// @param receiver_ Receiver of minted ERC20 tokens.
   /// @return amount Amount of ERC20 tokens received.
-  function mint(uint256[] calldata tokenId, address receiver_) public returns (uint256) {
+  function deposit(uint256[] calldata tokenId, address receiver_) public returns (uint256) {
     for (uint256 i; i < tokenId.length;) {
       erc721Asset.transferFrom(address(msg.sender), address(this), tokenId[i]);
         
-      // The _mint() function better be the last thing in the loop
       _mint(address(receiver_), 1e18);
 
       // Impossible to overflow
       unchecked {++i;}
     }
 
-    uint256 amount;
-
-    emit Deposit(address(msg.sender), receiver_, amount, tokenId);
+    emit Deposit(address(msg.sender), receiver_, tokenId.length * 1e18, tokenId);
 
     return amount = 1e18 * tokenId.length;
   }
