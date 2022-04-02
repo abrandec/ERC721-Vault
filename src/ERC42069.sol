@@ -15,8 +15,8 @@ contract ERC42069 is ERC20 {
 
   /// ============ EVENTS ============
 
-  event Deposit(address indexed caller, address indexed receiver, uint256[] indexed assetId);
-  event Withdraw(address indexed caller, address indexed receiver, uint256[] indexed assetId);
+  event Deposit(address indexed caller, address indexed receiver, uint256 amount, uint256[] tokenId);
+  event Withdraw(address indexed caller, address indexed receiver, uint256 amount, uint256[] tokenId);
 
   /// ============ IMMUTABLES ============
 
@@ -55,7 +55,7 @@ contract ERC42069 is ERC20 {
 
     uint256 amount;
 
-    emit Deposit(address(msg.sender), receiver_, tokenId);
+    emit Deposit(address(msg.sender), receiver_, amount, tokenId);
 
     return amount = 1e18 * tokenId.length;
   }
@@ -73,10 +73,8 @@ contract ERC42069 is ERC20 {
       // impossible to overflow
       unchecked {++i;}
     }
-
-    uint256 amount;
-
-    emit Withdraw(msg.sender, receiver_, tokenId);
+ 
+    emit Withdraw(msg.sender, receiver_, tokenId.length * 1e18, tokenId);
       
     return tokenId;
   }
