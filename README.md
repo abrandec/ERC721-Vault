@@ -3,6 +3,8 @@
 
 A minimal ERC42069 Vault Implementation for converting ERC721 to ERC20 and vice versa
 
+1 NFT == 1e18
+
 ## Blueprint
 
 ```ml
