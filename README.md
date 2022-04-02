@@ -53,7 +53,7 @@ NOTE: these scripts will prompt you for the contract name and deployed addresses
 
 ## Acknowledgements
 
-- [femplate](https://github.com/abigger87/femplate) by [abigger87](https://github.com/abigger87).
+- [femplate](https://github.com/abigger87/femplate)
 - [foundry](https://github.com/gakonst/foundry)
 - [solmate](https://github.com/Rari-Capital/solmate)
 - [forge-std](https://github.com/brockelmore/forge-std)
