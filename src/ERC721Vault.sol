@@ -6,10 +6,10 @@ import {ERC721} from "solmate/tokens/ERC721.sol";
 import {SafeTransferLib} from "solmate/utils/SafeTransferLib.sol";
 import {FixedPointMathLib} from "solmate/utils/FixedPointMathLib.sol";
 
-/// @title Minimal ERC42069, a ERC721 to ERC20 and vice versa Vault implementation
+/// @title Minimal ERC721Vault, a Vault implementation for converting ERC721 NFTs into ERC20 assets and vice versa.
 /// @notice Still in testing phase, trying to reduce gas
 /// @author Abran DeCarlo <abrandecarlo@protonmail.com>
-contract ERC42069 is ERC20 {
+contract ERC721Vault is ERC20 {
   using SafeTransferLib for ERC20;
   using FixedPointMathLib for uint256;
 
