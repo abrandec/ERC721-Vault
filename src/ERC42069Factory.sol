@@ -2,25 +2,25 @@
 pragma solidity 0.8.12;
 
 import {ClonesWithImmutableArgs} from "clones-with-immutable-args/ClonesWithImmutableArgs.sol";
-import "./ERC42069.sol";
+import "./ERC721Vault.sol";
 
-/// @title ERC42069 Clone Factory
-contract ERC42069Factory {
+/// @title ERC721Vault Clone Factory
+contract ERC721VaultFactory {
     using ClonesWithImmutableArgs for address;
     
-    ERC42069 public erc42069;
+    ERC42069 public erc721Vault;
 
-    constructor(ERC42069 erc42069_) {
-        erc42069 = erc42069_;
+    constructor(ERC721Vault erc721Vault_) {
+        erc721Vault = erc721Vault_;
     }
 
-    function createERC42069(
+    function createERC721Vault(
         ERC721 erc721Asset_,
         string memory name_,
         string memory symbol_,
         uint8 decimals_
     ) public returns (ERC42069 clone) {
         bytes memory data = abi.encodePacked(erc721Asset_, name_, symbol_, decimals_);
-        clone = ERC42069(address(erc42069).clone(data));
+        clone = ERC721Vault(address(erc721Vault).clone(data));
     }
 }
