@@ -17,15 +17,19 @@ contract ERC721Vault is ERC20 {
   using FixedPointMathLib for uint256;
 
   /// ============ EVENTS ============
+  
   event Deposit(address indexed caller, address indexed receiver, uint256 amount, uint256 tokenId);
   event Withdraw(address indexed caller, address indexed receiver, uint256 amount, uint256 tokenId);
 
   event DepositBulk(address indexed caller, address indexed receiver, uint256 amount, uint256[] tokenId);
   event WithdrawBulk(address indexed caller, address indexed receiver, uint256 amount, uint256[] tokenId);
 
-  /// ============ IMMUTABLES ============
+  /// ============ MUTABLES ============
+  
   mapping(uint256 => uint256) public GUARD;
 
+  /// ============ IMMUTABLES ============
+  
   ERC721 public immutable erc721Asset;
 
   /// ============ CONSTRUCTOR ============
