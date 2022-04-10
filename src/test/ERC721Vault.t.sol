@@ -2,7 +2,7 @@
 pragma solidity 0.8.12;
 
 import {ERC721Vault} from "../ERC721Vault.sol";
-import {MockERC721} from "../MockERC721.sol";
+import {MockERC721} from "../ERC721/MockERC721.sol";
 import {DSTestPlus} from "./utils/DSTestPlus.sol";
 
 // Prettier is crapping out on test files
@@ -33,12 +33,12 @@ contract ERC721VaultTest is DSTestPlus {
     function testDepositBulk() public {
         uint256[] memory id = new uint256[](6);
         // the only working way is the dirtiest one
-        id[0];
-        id[1];
-        id[2];
-        id[3];
-        id[4];
-        id[5];
+        id[0] = 0;
+        id[1] = 1;
+        id[2] = 2;
+        id[3] = 3;
+        id[4] = 4;
+        id[5] = 5;
 
         vm.startPrank(address(0xBEEF)); 
         for (uint256 i = 0; i < id.length; ++i) {
@@ -52,23 +52,21 @@ contract ERC721VaultTest is DSTestPlus {
     function testWithdrawBulk() public {
         uint256[] memory id = new uint256[](6);
         // the only working way is the dirtiest one
-        id[0];
-        id[1];
-        id[2];
-        id[3];
-        id[4];
-        id[5];
+        id[0] = 0;
+        id[1] = 1;
+        id[2] = 2;
+        id[3] = 3;
+        id[4] = 4;
+        id[5] = 5;
 
         testDepositBulk();
 
-        for (uint256 i = 0; i < id.length; ++i){
-        erc721Vault.withdraw(id[i], address(0xBEEF));
-        }
+        erc721Vault.withdrawBulk(id, address(0xBEEF));
     }
 
  
-    /// ============ IDK ============
-    
+    /// ============ TESTS INTENDED TO FAIL ============
+
     // Deposit someone elses NFTs
     function testFailDepositDiffUser() public {
         testDepositBulk();
@@ -79,22 +77,21 @@ contract ERC721VaultTest is DSTestPlus {
         erc721Vault.deposit(id[0], address(0xBEEF));
     }
 
-    /// ============ TESTS INTENDED TO FAIL ============
-
-    function testFailWithdrawDiffUser() public {
+  
+    function testFailWithdrawBulkDiffUser() public {
         uint256[] memory id = new uint256[](6);
         // the only working way is the dirtiest one
-        id[0];
-        id[1];
-        id[2];
-        id[3];
-        id[4];
-        id[5];
+        id[0] = 0;
+        id[1] = 1;
+        id[2] = 2;
+        id[3] = 3;
+        id[4] = 4;
+        id[5] = 5;
 
         testDepositBulk();
         vm.stopPrank();
         for (uint256 i = 0; i < id.length; ++i){
-        erc721Vault.withdraw(id[i], address(0xBEEF));
+        erc721Vault.withdrawBulk(id, address(0xBEEF));
         }
     }
 
@@ -111,20 +108,62 @@ contract ERC721VaultTest is DSTestPlus {
 
     /// ============ REENTRANCY TESTS ============
 
-    // If you manage to mint 2 erc721 tokens 
-    // with the same tokenId, thats not my fault.
-    // Minting is the last function being called in
-    // depositBulk
-    // No reason for deposit reentrancy for a vault
+    function testFailDepositTwice() public {
+        vm.startPrank(address(0xBEEF)); 
+        mockERC721.mint(address(0xBEEF), 0);
+        mockERC721.approve(address(erc721Vault), 0);
+        erc721Vault.deposit(0, address(0xBEEF));
+        erc721Vault.deposit(0, address(0xBEEF));
+    }
 
-    // fails
-    function testWithdrawReentrancy() public {
-        testDepositBulk();
-        uint256[] memory id = new uint256[](1);
+    function testFailWithdrawTwice() public {
+        uint256[] memory id = new uint256[](2);
+        // the only working way is the dirtiest one
         id[0] = 0;
+        id[1] = 1;
+       
+        testDepositBulk();
+       
         erc721Vault.withdraw(id[0], address(0xBEEF));
         erc721Vault.withdraw(id[0], address(0xBEEF));
-    } 
+      
+    }
+
+    function testFailDepositBulkTwice() public {
+        uint256[] memory id = new uint256[](6);
+        // the only working way is the dirtiest one
+        id[0] = 0;
+        id[1] = 1;
+        id[2] = 2;
+        id[3] = 3;
+        id[4] = 4;
+        id[5] = 5;
+
+        vm.startPrank(address(0xBEEF)); 
+        for (uint256 i = 0; i < id.length; ++i) {
+            mockERC721.mint(address(0xBEEF), id[i]);
+            mockERC721.approve(address(erc721Vault), id[i]);
+        }
+
+        erc721Vault.depositBulk(id, address(0xBEEF));
+        erc721Vault.depositBulk(id, address(0xBEEF));
+    }
+
+    function testFailWithdrawBulkTwice() public {
+        uint256[] memory id = new uint256[](6);
+        // the only working way is the dirtiest one
+        id[0] = 0;
+        id[1] = 1;
+        id[2] = 2;
+        id[3] = 3;
+        id[4] = 4;
+        id[5] = 5;
+
+        testDepositBulk();
+
+        erc721Vault.withdrawBulk(id, address(0xBEEF));
+        erc721Vault.withdrawBulk(id, address(0xBEEF));
+    }
 }
 
 

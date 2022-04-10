@@ -2,9 +2,12 @@
 pragma solidity 0.8.12;
 
 import {ERC20} from "solmate/tokens/ERC20.sol";
-import {ERC721} from "./ERC721.sol";
+import {ERC721} from "./ERC721/ERC721.sol";
 import {SafeTransferLib} from "solmate/utils/SafeTransferLib.sol";
 import {FixedPointMathLib} from "solmate/utils/FixedPointMathLib.sol";
+
+error TOKEN_NOT_IN_VAULT();
+error TOKEN_ALREADY_DEPOSITED();
 
 /// @title Minimal ERC721Vault, a Vault implementation for converting ERC721 NFTs into ERC20 assets and vice versa.
 /// @notice Still in testing phase, trying to reduce gas
@@ -21,6 +24,7 @@ contract ERC721Vault is ERC20 {
   event WithdrawBulk(address indexed caller, address indexed receiver, uint256 amount, uint256[] tokenId);
 
   /// ============ IMMUTABLES ============
+  mapping(uint256 => uint256) public GUARD;
 
   ERC721 public immutable erc721Asset;
 
@@ -48,8 +52,10 @@ contract ERC721Vault is ERC20 {
   /// @param receiver_ Receiver of minted ERC20 token.
   /// @return amount Amount of ERC20 tokens received.
   function deposit(uint256 tokenId, address receiver_) public returns (uint256 amount) {
+    if (GUARD[tokenId] == 1) revert TOKEN_ALREADY_DEPOSITED();
+    GUARD[tokenId] = 1;
     erc721Asset.transfer(address(this), tokenId);
-
+   
     _mint(address(receiver_), 1e18);
 
     emit Deposit(address(msg.sender), receiver_, 1e18, tokenId);
@@ -61,8 +67,10 @@ contract ERC721Vault is ERC20 {
   /// @param receiver_ The address to send the ERC721 tokens to.
   /// @return tokenId The tokenId sent to receiver_
   function withdraw(uint256 tokenId, address receiver_) public returns (uint256) {
+      if (GUARD[tokenId] == 0) revert TOKEN_NOT_IN_VAULT();
+      delete GUARD[tokenId];
       _burn(address(msg.sender), 1e18);
-
+      
       erc721Asset.transfer(address(this), tokenId);
       
       // impossible to overflow
@@ -79,6 +87,8 @@ contract ERC721Vault is ERC20 {
   /// @return amount Amount of ERC20 tokens received.
   function depositBulk(uint256[] calldata tokenId, address receiver_) public returns (uint256 amount) {
     for (uint256 i; i < tokenId.length;) {
+      if (GUARD[tokenId[i]] == 1) revert TOKEN_ALREADY_DEPOSITED();
+      GUARD[tokenId[i]] = 1;
       erc721Asset.transfer(address(this), tokenId[i]);
         
       _mint(address(receiver_), 1e18);
@@ -99,9 +109,13 @@ contract ERC721Vault is ERC20 {
   // still reverts on _burn() if msg.sender doesn't have enough erc20 tokens to transfer
   function withdrawBulk(uint256[] calldata tokenId, address receiver_) public returns (uint256[] calldata) {
     for (uint256 i; i < tokenId.length;) {
+      if (GUARD[tokenId[i]] == uint256(0)) revert TOKEN_NOT_IN_VAULT();
+      delete GUARD[tokenId[i]];
+
       _burn(address(msg.sender), 1e18);
+
       erc721Asset.transfer(address(this), tokenId[i]);
-      
+    
       // impossible to overflow
       unchecked {++i;}
     }
