@@ -54,6 +54,7 @@ contract ERC721Vault is ERC20 {
   function deposit(uint256 tokenId, address receiver_) public returns (uint256 amount) {
     if (GUARD[tokenId] == 1) revert TOKEN_ALREADY_DEPOSITED();
     GUARD[tokenId] = 1;
+    
     erc721Asset.transfer(address(this), tokenId);
    
     _mint(address(receiver_), 1e18);
@@ -69,6 +70,7 @@ contract ERC721Vault is ERC20 {
   function withdraw(uint256 tokenId, address receiver_) public returns (uint256) {
       if (GUARD[tokenId] == 0) revert TOKEN_NOT_IN_VAULT();
       delete GUARD[tokenId];
+      
       _burn(address(msg.sender), 1e18);
       
       erc721Asset.transfer(address(this), tokenId);
@@ -89,6 +91,7 @@ contract ERC721Vault is ERC20 {
     for (uint256 i; i < tokenId.length;) {
       if (GUARD[tokenId[i]] == 1) revert TOKEN_ALREADY_DEPOSITED();
       GUARD[tokenId[i]] = 1;
+      
       erc721Asset.transfer(address(this), tokenId[i]);
         
       _mint(address(receiver_), 1e18);
