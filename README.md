@@ -1,7 +1,7 @@
 
 # ERC721 Vault • [![tests](https://github.com/abrandec/ERC721-Vault/actions/workflows/tests.yml/badge.svg)](https://github.com/abrandec/ERC721-Vault/actions/workflows/tests.yml) [![lints](https://github.com/abrandec/ERC721-Vault/actions/workflows/lints.yml/badge.svg)](https://github.com/abrandec/ERC721-Vault/actions/workflows/lints.yml) ![GitHub](https://img.shields.io/github/license/abrandec/ERC721-Vault)  ![GitHub package.json version](https://img.shields.io/github/package-json/v/abrandec/ERC721-Vault)
 
-A minimal ERC721 Vault Implementation for converting ERC721 to ERC20 and vice versa
+A minimal ERC721 Vault Implementation for converting ERC721 NFTs to ERC20 assets and vice versa
 
 1 NFT == 1e18
 
