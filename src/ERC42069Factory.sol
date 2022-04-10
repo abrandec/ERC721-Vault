@@ -19,7 +19,7 @@ contract ERC721VaultFactory {
         string memory name_,
         string memory symbol_,
         uint8 decimals_
-    ) public returns (ERC42069 clone) {
+    ) public returns (ERC721Vault clone) {
         bytes memory data = abi.encodePacked(erc721Asset_, name_, symbol_, decimals_);
         clone = ERC721Vault(address(erc721Vault).clone(data));
     }
