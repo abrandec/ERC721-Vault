@@ -2,7 +2,7 @@
 pragma solidity 0.8.12;
 
 import {ERC20} from "solmate/tokens/ERC20.sol";
-import {ERC721} from "solmate/tokens/ERC721.sol";
+import {ERC721} from "./ERC721.sol";
 import {SafeTransferLib} from "solmate/utils/SafeTransferLib.sol";
 import {FixedPointMathLib} from "solmate/utils/FixedPointMathLib.sol";
 
@@ -14,9 +14,11 @@ contract ERC721Vault is ERC20 {
   using FixedPointMathLib for uint256;
 
   /// ============ EVENTS ============
+  event Deposit(address indexed caller, address indexed receiver, uint256 amount, uint256 tokenId);
+  event Withdraw(address indexed caller, address indexed receiver, uint256 amount, uint256 tokenId);
 
-  event Deposit(address indexed caller, address indexed receiver, uint256 amount, uint256[] tokenId);
-  event Withdraw(address indexed caller, address indexed receiver, uint256 amount, uint256[] tokenId);
+  event DepositBulk(address indexed caller, address indexed receiver, uint256 amount, uint256[] tokenId);
+  event WithdrawBulk(address indexed caller, address indexed receiver, uint256 amount, uint256[] tokenId);
 
   /// ============ IMMUTABLES ============
 
@@ -37,14 +39,47 @@ contract ERC721Vault is ERC20 {
     erc721Asset = erc721Asset_; 
   }
 
+  /// ============ TRANSFER FUNCTIONS ============
+
+
   /// ============ DEPOSIT/WITHDRAW FUNCTIONS ============
+
+  /// @param tokenId tokenId to send to vault.
+  /// @param receiver_ Receiver of minted ERC20 token.
+  /// @return amount Amount of ERC20 tokens received.
+  function deposit(uint256 tokenId, address receiver_) public returns (uint256 amount) {
+    erc721Asset.transfer(address(this), tokenId);
+
+    _mint(address(receiver_), 1e18);
+
+    emit Deposit(address(msg.sender), receiver_, 1e18, tokenId);
+
+    return amount = 1e18;
+  }
+
+  /// @param tokenId The tokenId that a msg.sender wants to withdraw.
+  /// @param receiver_ The address to send the ERC721 tokens to.
+  /// @return tokenId The tokenId sent to receiver_
+  function withdraw(uint256 tokenId, address receiver_) public returns (uint256) {
+      _burn(address(msg.sender), 1e18);
+
+      erc721Asset.transfer(address(this), tokenId);
+      
+      // impossible to overflow
+ 
+    emit Withdraw(msg.sender, receiver_, 1e18, tokenId);
+      
+    return tokenId;
+  }
+
+  /// ============ BULK DEPOSIT/WITHDRAW FUNCTIONS ============
 
   /// @param tokenId tokenId(s) to send to vault.
   /// @param receiver_ Receiver of minted ERC20 tokens.
   /// @return amount Amount of ERC20 tokens received.
-  function deposit(uint256[] calldata tokenId, address receiver_) public returns (uint256 amount) {
+  function depositBulk(uint256[] calldata tokenId, address receiver_) public returns (uint256 amount) {
     for (uint256 i; i < tokenId.length;) {
-      erc721Asset.transferFrom(address(msg.sender), address(this), tokenId[i]);
+      erc721Asset.transfer(address(this), tokenId[i]);
         
       _mint(address(receiver_), 1e18);
 
@@ -52,7 +87,7 @@ contract ERC721Vault is ERC20 {
       unchecked {++i;}
     }
 
-    emit Deposit(address(msg.sender), receiver_, tokenId.length * 1e18, tokenId);
+    emit DepositBulk(address(msg.sender), receiver_, tokenId.length * 1e18, tokenId);
 
     return amount = 1e18 * tokenId.length;
   }
@@ -62,17 +97,20 @@ contract ERC721Vault is ERC20 {
   /// @return tokenId The tokenId(s) sent to receiver_
   // Removing requirement statement for approval cuts gas cost by a lot for users,
   // still reverts on _burn() if msg.sender doesn't have enough erc20 tokens to transfer
-  function withdraw(uint256[] calldata tokenId, address receiver_) public returns (uint256[] calldata) {
+  function withdrawBulk(uint256[] calldata tokenId, address receiver_) public returns (uint256[] calldata) {
     for (uint256 i; i < tokenId.length;) {
       _burn(address(msg.sender), 1e18);
-      erc721Asset.transferFrom(address(this), address(receiver_), tokenId[i]);
+      erc721Asset.transfer(address(this), tokenId[i]);
       
       // impossible to overflow
       unchecked {++i;}
     }
  
-    emit Withdraw(msg.sender, receiver_, tokenId.length * 1e18, tokenId);
+    emit WithdrawBulk(msg.sender, receiver_, tokenId.length * 1e18, tokenId);
       
     return tokenId;
   }
+
+   /// ============ TRANSFERFROM FUNCTIONS ============
+
 }
