@@ -33,7 +33,7 @@ contract ERC721VaultTest is DSTestPlus {
         mockERC721.approve(address(erc721Vault), 0);
         uint256[] memory id = new uint256[](1);
         id[0] = 0;
-        erc721Vault.mint(id, address(0xBEEF));
+        erc721Vault.deposit(id, address(0xBEEF));
     }
 
     function testWithdraw() public {
@@ -51,7 +51,7 @@ contract ERC721VaultTest is DSTestPlus {
         vm.expectRevert(bytes("NOT_AUTHORIZED"));
         mockERC721.approve(address(erc721Vault), 0);
         vm.expectRevert(bytes("WRONG_FROM"));
-        erc721Vault.mint(id, address(0xBEEF));
+        erc721Vault.deposit(id, address(0xBEEF));
     }
 
     function testTransfer() public {
@@ -90,8 +90,8 @@ contract ERC721VaultTest is DSTestPlus {
         testDeposit();
         uint256[] memory id = new uint256[](1);
         id[0] = 0;
-        erc42069.withdraw(id, address(0xBEEF));
-        erc42069.withdraw(id, address(0xBEEF));
+        erc721Vault.withdraw(id, address(0xBEEF));
+        erc721Vault.withdraw(id, address(0xBEEF));
     }
 }
 

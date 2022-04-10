@@ -42,7 +42,7 @@ contract ERC721Vault is ERC20 {
   /// @param tokenId tokenId(s) to send to vault.
   /// @param receiver_ Receiver of minted ERC20 tokens.
   /// @return amount Amount of ERC20 tokens received.
-  function deposit(uint256[] calldata tokenId, address receiver_) public returns (uint256) {
+  function deposit(uint256[] calldata tokenId, address receiver_) public returns (uint256 amount) {
     for (uint256 i; i < tokenId.length;) {
       erc721Asset.transferFrom(address(msg.sender), address(this), tokenId[i]);
         

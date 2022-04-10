@@ -8,7 +8,7 @@ import "./ERC721Vault.sol";
 contract ERC721VaultFactory {
     using ClonesWithImmutableArgs for address;
     
-    ERC42069 public erc721Vault;
+    ERC721Vault public erc721Vault;
 
     constructor(ERC721Vault erc721Vault_) {
         erc721Vault = erc721Vault_;
